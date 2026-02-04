@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChannelBoost Pro | Premium Analytics</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            base: '#03050a',
+                            surface: '#0d111c',
+                            accent: '#6366f1',
+                            gold: '#fbbf24'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #03050a;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        .app-view {
+            display: none;
+            opacity: 0;
+            transform: scale(0.98);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .app-view.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Side Menu */
+        #side-menu {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #side-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Button Glow */
+        .btn-glow {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Score Ring Animation */
+        .progress-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 2s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        /* Prank Modal */
+        #prank-modal {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Header -->
+    <nav class="fixed top-0 w-full z-[60] px-6 py-4 flex justify-between items-center backdrop-blur-md bg-brand-base/50 border-b border-white/5">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('landing')">
+            <div class="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-crown text-brand-gold text-sm"></i>
+            </div>
+            <span class="text-xl font-extrabold tracking-tighter text-white">Channel<span class="text-indigo-400 font-medium">Boost</span> <span class="text-[10px] ml-1 text-brand-gold font-bold bg-brand-gold/10 px-2 py-0.5 rounded">PRO</span></span>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <i class="fas fa-crown text-brand-gold text-lg animate-pulse hidden md:block"></i>
+            <button onclick="toggleMenu()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition">
+                <i class="fas fa-bars-staggered text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Side Slide Menu -->
+    <div id="side-menu-overlay" onclick="toggleMenu()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="side-menu" class="fixed top-0 right-0 h-full w-80 bg-brand-surface border-l border-white/10 z-[80] p-10 flex flex-col">
+        <div class="flex justify-between items-center mb-12">
+            <span class="text-xs font-black uppercase tracking-[0.3em] text-indigo-400">Navigation</span>
+            <button onclick="toggleMenu()"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <ul class="space-y-6 text-lg font-bold">
+            <li><button onclick="navigateTo('landing'); toggleMenu()" class="hover:text-indigo-400 transition">Home</button></li>
+            <li><button onclick="navigateTo('signup'); toggleMenu()" class="hover:text-indigo-400 transition">Start Analysis</button></li>
+            <li><button onclick="toggleMenu()" class="hover:text-indigo-400 transition">Enterprise API</button></li>
+            <li><button onclick="toggleMenu()" class="hover:text-indigo-400 transition">Contact Support</button></li>
+        </ul>
+        <div class="mt-auto">
+            <div class="p-6 rounded-2xl bg-indigo-600/10 border border-indigo-500/20">
+                <i class="fas fa-crown text-brand-gold mb-3"></i>
+                <p class="text-xs font-bold text-white mb-2">Pro Subscription Active</p>
+                <p class="text-[10px] text-slate-500 leading-relaxed">You have unlimited daily channel scans and PDF report exports.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- View: Landing -->
+    <main id="view-landing" class="app-view active min-h-screen flex-col items-center justify-center text-center px-6 pt-20">
+        <h1 class="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
+            The Gold Standard <br><span class="text-slate-500">of Analytics.</span>
+        </h1>
+        <p class="text-slate-400 max-w-xl mx-auto mb-10 text-lg">
+            Join the elite 1% of creators using real-time algorithmic data to dominate their niche.
+        </p>
+        <button onclick="navigateTo('signup')" class="btn-glow px-12 py-5 rounded-2xl font-black uppercase tracking-widest text-sm text-white">
+            Unlock My Report
+        </button>
+    </main>
+
+    <!-- View: Signup -->
+    <main id="view-signup" class="app-view min-h-screen flex-col items-center justify-center px-6 pt-20">
+        <div class="glass-card max-w-lg w-full p-10 rounded-[2.5rem]">
+            <h2 class="text-3xl font-bold mb-8">Onboarding</h2>
+            <form onsubmit="handleSignup(event)" class="space-y-6">
+                <input type="text" required class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500 text-white" placeholder="Full Name">
+                <input type="email" required class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none focus:border-indigo-500 text-white" placeholder="Email Address">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Select Niche</label>
+                    <select class="w-full bg-white/5 border border-white/10 p-4 rounded-xl outline-none text-white appearance-none cursor-pointer">
+                        <option>Tech & AI</option>
+                        <option>Lifestyle & Fashion</option>
+                        <option>Gaming & E-Sports</option>
+                        <option>Business & Finance</option>
+                        <option>Food & Cooking</option>
+                        <option>Fitness & Health</option>
+                        <option>Travel & Vlogs</option>
+                        <option>Education & Science</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-glow w-full py-5 rounded-xl font-bold uppercase tracking-widest text-sm text-white">
+                    Continue to Dashboard
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- View: Dashboard -->
+    <main id="view-dashboard" class="app-view min-h-screen flex-col items-center justify-center px-6 pt-20">
+        <div class="max-w-4xl w-full">
+            <h2 class="text-4xl font-black mb-12">Select Asset Type</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <button onclick="selectPlatform('yt')" id="p-yt" class="platform-btn p-8 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-3 transition-all">
+                    <i class="fab fa-youtube text-3xl"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">YouTube</span>
+                </button>
+                <button onclick="selectPlatform('ig')" id="p-ig" class="platform-btn p-8 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-3 transition-all">
+                    <i class="fab fa-instagram text-3xl"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Instagram</span>
+                </button>
+                <button onclick="selectPlatform('tk')" id="p-tk" class="platform-btn p-8 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-3 transition-all">
+                    <i class="fab fa-tiktok text-3xl"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">TikTok</span>
+                </button>
+                <button onclick="selectPlatform('fb')" id="p-fb" class="platform-btn p-8 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center gap-3 transition-all">
+                    <i class="fab fa-facebook-f text-3xl"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Facebook</span>
+                </button>
+            </div>
+            
+            <div id="url-panel" class="opacity-0 translate-y-4 transition-all duration-500 pointer-events-none">
+                <div class="glass-card p-4 rounded-2xl flex gap-2">
+                    <input type="url" id="url-input" class="flex-1 bg-transparent px-4 py-3 outline-none text-white" placeholder="https://www.social.com/username">
+                    <button onclick="processData()" class="btn-glow px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest">Analyze</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- View: Results -->
+    <main id="view-results" class="app-view min-h-screen flex-col items-center pt-32 pb-20 px-6">
+        <div class="max-w-6xl w-full grid lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-card p-10 rounded-3xl flex flex-col items-center text-center">
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] mb-8">Channel Score</span>
+                    <div class="relative w-44 h-44">
+                        <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+                            <circle id="score-ring" cx="50" cy="50" r="45" fill="none" stroke="#6366f1" stroke-width="6" stroke-linecap="round" class="progress-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-6xl font-black">92</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card p-8 rounded-3xl">
+                    <h4 class="text-xs font-bold uppercase tracking-widest mb-6 text-slate-500">Quick Diagnostics</h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-sm"><span>Reach</span><span class="text-green-400">High</span></div>
+                        <div class="flex justify-between text-sm"><span>Trust</span><span class="text-indigo-400">Verified</span></div>
+                        <div class="flex justify-between text-sm"><span>Status</span><span class="text-brand-gold">Pro</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 grid md:grid-cols-2 gap-6 h-fit">
+                <div class="glass-card p-8 rounded-3xl col-span-2">
+                    <h3 class="text-xl font-bold mb-4 italic">Analysis Finalized.</h3>
+                    <p class="text-slate-400 leading-relaxed">Our AI has detected a high potential for viral breakout in your current niche. See detailed strategy below.</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl">
+                    <i class="fas fa-bolt text-brand-gold mb-4 text-xl"></i>
+                    <h4 class="font-bold text-white">Velocity Peak</h4>
+                    <p class="text-xs text-slate-500 mt-2">Posting at 4pm UTC results in a 140% higher retention rate.</p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl">
+                    <i class="fas fa-eye text-indigo-400 mb-4 text-xl"></i>
+                    <h4 class="font-bold text-white">Visual Audit</h4>
+                    <p class="text-xs text-slate-500 mt-2">Primary color palette is 98% compatible with mobile dark modes.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Prank Modal -->
+    <div id="prank-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-brand-base/90 backdrop-blur-2xl"></div>
+        <div class="glass-card max-w-lg w-full p-12 rounded-[3rem] text-center relative z-10 border-brand-gold/20">
+            <div class="text-6xl mb-6">🤣</div>
+            <h2 class="text-4xl font-black text-white mb-6 uppercase italic tracking-tighter">GOT YOU GOOD!</h2>
+            <p class="text-2xl font-bold text-indigo-400 mb-8 tracking-wide">BOLO</p>
+            <div class="h-1 w-20 bg-brand-gold mx-auto mb-8 rounded-full"></div>
+            <p class="text-slate-500 text-sm leading-relaxed mb-10">This entire app was  just to prank you it started as a small prank until he escalated. There is no such thing has increase subscribers. The guy him is actually me. I made everything up lucky.
+                hope yoi aint mad
+            </p>
+            <button onclick="location.reload()" class="px-10 py-4 bg-white text-black font-black uppercase text-xs tracking-widest rounded-xl hover:bg-slate-200 transition">Redo prank</button>
+        </div>
+    </div>
+
+    <!-- Background Loader -->
+    <div id="loader" class="fixed inset-0 z-[100] bg-brand-base flex flex-col items-center justify-center hidden">
+        <div class="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+        <p class="text-[10px] font-bold text-white uppercase tracking-[0.5em]">Scanning Algorithm</p>
+    </div>
+
+    <script>
+        let currentView = 'landing';
+
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('side-menu-overlay');
+            const isOpen = menu.classList.toggle('open');
+            
+            if(isOpen) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            } else {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function navigateTo(viewId) {
+            const current = document.getElementById('view-' + currentView);
+            const target = document.getElementById('view-' + viewId);
+
+            current.style.opacity = '0';
+            current.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                current.classList.remove('active');
+                target.classList.add('active');
+                
+                setTimeout(() => {
+                    target.style.opacity = '1';
+                    target.style.transform = 'scale(1)';
+                    currentView = viewId;
+
+                    if(viewId === 'results') {
+                        animateScore();
+                        triggerPrank();
+                    }
+                }, 50);
+            }, 300);
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            navigateTo('dashboard');
+        }
+
+        function selectPlatform(id) {
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('border-indigo-500', 'bg-indigo-500/10'));
+            document.getElementById('p-' + id).classList.add('border-indigo-500', 'bg-indigo-500/10');
+            
+            const panel = document.getElementById('url-panel');
+            panel.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        }
+
+        function processData() {
+            const loader = document.getElementById('loader');
+            loader.classList.remove('hidden');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                navigateTo('results');
+            }, 2500);
+        }
+
+        function animateScore() {
+            const ring = document.getElementById('score-ring');
+            const circumference = 2 * Math.PI * 45;
+            const offset = circumference - (0.92 * circumference);
+            ring.style.strokeDashoffset = offset;
+        }
+
+        function triggerPrank() {
+            // Wait 5 seconds after results appear, then show the prank modal
+            setTimeout(() => {
+                const modal = document.getElementById('prank-modal');
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 50);
+            }, 8000);
+        }
+
+        // Init
+        window.onload = () => {
+            document.getElementById('view-landing').style.opacity = '1';
+            document.getElementById('view-landing').style.transform = 'scale(1)';
+        };
+    </script>
+</body>
+</html>
